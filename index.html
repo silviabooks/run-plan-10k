@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12161c">
+<title>10 km sotto l'ora — Diario</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#111">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+  :root{
+    --bg:#0f1318; --card:#181e26; --card2:#1f2731; --line:#2b3542;
+    --txt:#eef2f7; --dim:#93a1b2; --accent:#ff6b4a; --accent2:#37c8a0;
+    --warn:#e8b64c;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.45;
+    padding:0 0 90px 0;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    padding:18px 16px 12px;position:sticky;top:0;z-index:30;
+    background:linear-gradient(180deg,#0f1318 70%,rgba(15,19,24,.92));
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  h1{font-size:19px;margin:0 0 2px;letter-spacing:-.2px}
+  .sub{font-size:12.5px;color:var(--dim)}
+  .bar{height:5px;background:var(--card2);border-radius:3px;overflow:hidden;margin-top:12px}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#ff9b6a);border-radius:3px;transition:width .35s}
+  .barmeta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-top:5px}
+
+  .weeks{display:flex;gap:7px;overflow-x:auto;padding:12px 16px 4px;scrollbar-width:none}
+  .weeks::-webkit-scrollbar{display:none}
+  .wk{
+    flex:0 0 auto;min-width:44px;height:44px;border-radius:12px;border:1px solid var(--line);
+    background:var(--card);color:var(--dim);font-size:13px;font-weight:600;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  }
+  .wk small{font-size:9px;font-weight:500;opacity:.8}
+  .wk.active{background:var(--txt);color:#0f1318;border-color:var(--txt)}
+  .wk.done{border-color:var(--accent2);color:var(--accent2)}
+  .wk.done.active{background:var(--accent2);color:#0f1318;border-color:var(--accent2)}
+  .wk.partial{border-color:var(--warn)}
+
+  main{padding:8px 16px}
+  .blocklabel{
+    font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+    margin:16px 0 8px;font-weight:700;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:14px;margin-bottom:11px;transition:border-color .2s;
+  }
+  .card.done{border-color:rgba(55,200,160,.55);background:linear-gradient(180deg,rgba(55,200,160,.07),var(--card))}
+  .cardtop{display:flex;align-items:flex-start;gap:11px}
+  .tick{
+    flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);
+    background:transparent;display:flex;align-items:center;justify-content:center;
+    color:transparent;font-size:16px;margin-top:1px;padding:0;
+  }
+  .card.done .tick{background:var(--accent2);border-color:var(--accent2);color:#0f1318}
+  .ttl{flex:1}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px}
+  .badge{
+    font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:3px 7px;border-radius:6px;background:var(--card2);color:var(--dim);
+  }
+  .badge.a{background:rgba(255,107,74,.16);color:#ff9b80}
+  .badge.b{background:rgba(140,170,255,.14);color:#a9c0ff}
+  .badge.c{background:rgba(55,200,160,.14);color:#6fdcbb}
+  .badge.scarico{background:rgba(232,182,76,.15);color:var(--warn)}
+  .badge.test{background:rgba(255,107,74,.2);color:#ffb09c}
+  .name{font-size:15px;font-weight:650;margin-bottom:3px}
+  .desc{font-size:13.5px;color:var(--dim);line-height:1.42}
+  .chev{
+    flex:0 0 auto;background:none;border:0;color:var(--dim);font-size:13px;
+    padding:4px 2px;margin-top:1px;
+  }
+  .log{display:none;margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
+  .card.open .log{display:block}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .fld label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:4px;font-weight:600}
+  input,textarea{
+    width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;
+    color:var(--txt);font-size:16px;padding:9px 10px;font-family:inherit;
+  }
+  input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  textarea{resize:vertical;min-height:52px;font-size:15px}
+  .feel{display:flex;gap:7px;margin-top:10px}
+  .feel button{
+    flex:1;background:var(--card2);border:1px solid var(--line);color:var(--dim);
+    border-radius:10px;padding:9px 4px;font-size:12.5px;font-weight:600;font-family:inherit;
+  }
+  .feel button.on{background:var(--accent);border-color:var(--accent);color:#0f1318}
+  .pace{font-size:12.5px;color:var(--accent2);margin-top:9px;min-height:16px;font-weight:600}
+  .hint{font-size:12px;color:var(--dim);margin-top:9px}
+
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:6px 0 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+  .stat b{display:block;font-size:22px;letter-spacing:-.4px}
+  .stat span{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+  details summary{font-weight:650;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";color:var(--dim);font-size:18px;font-weight:400}
+  details[open] summary::after{content:"–"}
+  details .inner{font-size:13.5px;color:var(--dim);margin-top:10px;line-height:1.5}
+  details .inner b{color:var(--txt)}
+  details ul{padding-left:17px;margin:7px 0}
+  details li{margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+  th,td{text-align:left;padding:6px 5px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+
+  footer{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap}
+  .btn{
+    flex:1;min-width:130px;background:var(--card);border:1px solid var(--line);color:var(--txt);
+    border-radius:11px;padding:12px;font-size:13px;font-weight:600;font-family:inherit;
+  }
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#0f1318}
+  .note{font-size:11.5px;color:var(--dim);margin-top:10px;line-height:1.5}
+  .warnbox{
+    background:rgba(232,182,76,.12);border:1px solid rgba(232,182,76,.4);color:var(--warn);
+    border-radius:12px;padding:11px 13px;font-size:12.5px;margin:10px 0;display:none;
+  }
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:22px;
+    background:var(--txt);color:#0f1318;padding:11px 18px;border-radius:22px;font-size:13px;
+    font-weight:650;opacity:0;transition:.25s;pointer-events:none;z-index:99;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>10 km sotto l'ora</h1>
+  <div class="sub" id="subline">18 settimane · Silvia</div>
+  <div class="bar"><i id="progbar"></i></div>
+  <div class="barmeta"><span id="progtxt">0 / 54 sedute</span><span id="kmtxt">0 km</span></div>
+</header>
+
+<div class="weeks" id="weeks"></div>
+
+<main>
+  <div class="warnbox" id="nowarn"></div>
+  <div id="plan"></div>
+
+  <div class="blocklabel">Totale</div>
+  <div class="stats">
+    <div class="stat"><b id="s-done">0</b><span>Sedute fatte</span></div>
+    <div class="stat"><b id="s-km">0</b><span>Chilometri</span></div>
+    <div class="stat"><b id="s-time">0h</b><span>Tempo in corsa</span></div>
+    <div class="stat"><b id="s-long">–</b><span>Uscita più lunga</span></div>
+  </div>
+
+  <div class="blocklabel">Promemoria</div>
+  <div id="refs"></div>
+
+  <div class="blocklabel">Dati</div>
+  <details>
+    <summary>Backup e ripristino</summary>
+    <div class="inner">
+      I dati stanno solo su questo dispositivo. Se cambi telefono, o se il browser pulisce la memoria, senza un backup perdi il diario.
+      <div style="display:flex;gap:8px;margin-top:11px;flex-wrap:wrap">
+        <button class="btn" id="export">Esporta backup</button>
+        <button class="btn" id="import">Importa backup</button>
+        <input type="file" id="file" accept="application/json" style="display:none">
+      </div>
+      <div class="note">Il backup è un file JSON: conservalo in Files o mandatelo via email.</div>
+    </div>
+  </details>
+  <details>
+    <summary>Come si legge il piano</summary>
+    <div class="inner">
+      <b>Facile</b> 8'30"–9'00"/km — riesci a parlare in frasi intere.<br>
+      <b>Moderato</b> 6'50"–7'10"/km — frasi brevi, 3-4 parole.<br>
+      <b>Forte</b> 6'15"–6'40"/km — solo respiro, 15-20 secondi alla volta.<br>
+      <b>Recupero</b> camminata o 9'00"+/km.<br><br>
+      Il 70-80% dei chilometri va corso facile. Se corri tutto a ritmo medio, ti fai male.
+      <br><br>
+      <b>La settimana:</b> martedì corsa A + Giorno 1 · giovedì corsa B + Giorno 2 · sabato corsa C da sola · domenica Giorno 3. Corri prima dei pesi solo il giovedì.
+      <br><br>
+      <b>Checkpoint settimana 6:</b> 45' continuo. <b>Settimana 12:</b> test 5 km — sotto 30' sei in linea per l'ora.
+    </div>
+  </details>
+  <details>
+    <summary>Pesi — adattamenti nei giorni doppi</summary>
+    <div class="inner">
+      <ul>
+        <li><b>Martedì</b> — ordine libero. Dalla settimana 13: una serie in meno di bulgarian e lateral lunge.</li>
+        <li><b>Giovedì</b> — corsa sempre prima. Nelle settimane 7, 8, 11, 13, 15, 17: bulgarian e single leg box squat a 2 serie, senza cedimento.</li>
+        <li><b>Domenica</b> — SL RDL, KB swing e iperestensioni lasciando 1-2 ripetizioni di margine.</li>
+        <li><b>Mai</b> corsa a un orario e pesi a un altro come se fossero due giorni diversi.</li>
+      </ul>
+    </div>
+  </details>
+
+  <footer>
+    <button class="btn" id="allopen">Apri tutte</button>
+    <button class="btn" id="reset">Azzera diario</button>
+  </footer>
+  <div class="note">File autonomo: funziona senza connessione. I progressi restano sul dispositivo.</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PLAN = [
+ {w:1,b:1,s:[
+   {k:'A',t:'25\': 1\' corsa / 1\' cammino × 12'},
+   {k:'B',t:'25\': 90" corsa / 60" cammino × 10'},
+   {k:'C',t:'30\': 2\' corsa / 1\' cammino × 10'}]},
+ {w:2,b:1,s:[
+   {k:'A',t:'30\': 2\' corsa / 1\' cammino × 10'},
+   {k:'B',t:'30\': 3\' corsa / 1\' cammino × 7'},
+   {k:'C',t:'35\': 3\' corsa / 1\' cammino × 9'}]},
+ {w:3,b:1,s:[
+   {k:'A',t:'30\': 4\' corsa / 1\' cammino × 6'},
+   {k:'B',t:'32\': 5\' corsa / 1\' cammino × 5'},
+   {k:'C',t:'38\': 5\' corsa / 1\' cammino × 6'}]},
+ {w:4,b:1,s:[
+   {k:'A',t:'25\' facile, con qualche pausa di cammino',tag:'scarico'},
+   {k:'B',t:'28\': 4\' corsa / 1\' cammino'},
+   {k:'C',t:'30\' corsa facile'}]},
+ {w:5,b:1,s:[
+   {k:'A',t:'30\' corsa continua facile'},
+   {k:'B',t:'32\' corsa continua facile'},
+   {k:'C',t:'40\' continuo — concessi 2\' di cammino'}]},
+ {w:6,b:1,s:[
+   {k:'A',t:'35\' corsa continua'},
+   {k:'B',t:'35\' con 3 × 3\' moderato, 2\' facile in mezzo'},
+   {k:'C',t:'45\' corsa continua — circa 5 km',tag:'test'}]},
+ {w:7,b:2,s:[
+   {k:'A',t:'35\' facile'},
+   {k:'B',t:'6 × 2\' forte, 90" di recupero'},
+   {k:'C',t:'50\' facile — circa 6 km'}]},
+ {w:8,b:2,s:[
+   {k:'A',t:'35\' facile'},
+   {k:'B',t:'5 × 4\' forte, 2\' di recupero'},
+   {k:'C',t:'55\' facile — circa 6,5 km'}]},
+ {w:9,b:2,s:[
+   {k:'A',t:'35\' facile'},
+   {k:'B',t:'2 × 8\' moderato, 3\' di recupero'},
+   {k:'C',t:'60\' facile — circa 7 km'}]},
+ {w:10,b:2,s:[
+   {k:'A',t:'30\' facile',tag:'scarico'},
+   {k:'B',t:'6 × 2\' moderato'},
+   {k:'C',t:'45\' facile'}]},
+ {w:11,b:2,s:[
+   {k:'A',t:'35\' facile'},
+   {k:'B',t:'3 × 8\' moderato, 3\' di recupero'},
+   {k:'C',t:'65\' facile — circa 8 km'}]},
+ {w:12,b:2,s:[
+   {k:'A',t:'30\' facile + 4 × 20" veloci'},
+   {k:'B',t:'Test 5 km a tutta, dopo 12\' di riscaldamento',tag:'test'},
+   {k:'C',t:'60\' facile'}]},
+ {w:13,b:3,s:[
+   {k:'A',t:'35\' facile'},
+   {k:'B',t:'5 × 5\' a 6\'15"–6\'30", 2\'30" di recupero'},
+   {k:'C',t:'70\' facile — circa 8,5 km'}]},
+ {w:14,b:3,s:[
+   {k:'A',t:'35\' facile'},
+   {k:'B',t:'20\' continuo a 6\'40"–6\'50"'},
+   {k:'C',t:'75\' facile — circa 9 km'}]},
+ {w:15,b:3,s:[
+   {k:'A',t:'35\' facile'},
+   {k:'B',t:'3 × 8\' a 6\'15", 3\' di recupero'},
+   {k:'C',t:'80\' facile — circa 9,5 km'}]},
+ {w:16,b:3,s:[
+   {k:'A',t:'30\' facile',tag:'scarico'},
+   {k:'B',t:'3 × 5\' a 6\'10", 3\' di recupero'},
+   {k:'C',t:'60\' facile'}]},
+ {w:17,b:3,s:[
+   {k:'A',t:'30\' facile + 4 × 20" veloci'},
+   {k:'B',t:'4 × 5\' a 6\'05", 2\'30" di recupero'},
+   {k:'C',t:'50-60\' facile'}]},
+ {w:18,b:3,s:[
+   {k:'A',t:'25\' facile + 4 × 20" veloci'},
+   {k:'B',t:'20\' facile'},
+   {k:'C',t:'10 km — parti a 6\'10", chiudi a 5\'50"',tag:'test'}]}
+];
+
+const DAYS = {A:'martedì + Giorno 1', B:'giovedì + Giorno 2', C:'sabato, solo corsa'};
+const BLOCKNAME = {1:'Blocco 1 — Base',2:'Blocco 2 — Volume e velocità',3:'Blocco 3 — Specifico 10 km'};
+const KEY = 'corsa10k.v1';
+
+let state = {sessions:{}, open:{}, week:null};
+let memoryOnly = false;
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const p = JSON.parse(raw); state.sessions = p.sessions||{}; state.open = p.open||{}; }
+  }catch(e){ memoryOnly = true; }
+  if(memoryOnly) document.getElementById('nowarn').style.display='block',
+    document.getElementById('nowarn').textContent = 'Questo browser non permette di salvare i dati in locale: il diario resterà in memoria finché la pagina è aperta. Esporta un backup prima di chiuderla.';
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({sessions:state.sessions, open:state.open})); }
+  catch(e){ memoryOnly = true; }
+}
+
+function sid(w,k){ return w+'-'+k; }
+function get(w,k){ return state.sessions[sid(w,k)] || {}; }
+
+function parseTime(v){
+  if(!v) return null;
+  const s = v.trim().replace(',',':');
+  if(/^\d+$/.test(s)) return parseInt(s,10)*60;
+  const m = s.match(/^(\d+):(\d{1,2})$/);
+  if(m) return parseInt(m[1],10)*60 + parseInt(m[2],10);
+  const h = s.match(/^(\d+):(\d{1,2}):(\d{1,2})$/);
+  if(h) return parseInt(h[1],10)*3600 + parseInt(h[2],10)*60 + parseInt(h[3],10);
+  return null;
+}
+function fmtTime(sec){
+  if(sec == null) return '–';
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = Math.round(sec%60);
+  if(h) return h+'h '+String(m).padStart(2,'0')+'m';
+  return m+'m '+String(s).padStart(2,'0')+'s';
+}
+function fmtPace(sec, km){
+  if(!sec || !km) return '';
+  const p = Math.round(sec/km);
+  return Math.floor(p/60)+"'"+String(p%60).padStart(2,'0')+'"';
+}
+function num(v){ const n = parseFloat(String(v).replace(',','.')); return isNaN(n)?0:n; }
+
+function activeWeek(){
+  if(state.week) return state.week;
+  for(const bl of PLAN){
+    if(bl.s.some(x => !get(bl.w,x.k).done)) return bl.w;
+  }
+  return 18;
+}
+
+function renderWeeks(){
+  const cur = activeWeek();
+  document.getElementById('weeks').innerHTML = PLAN.map(bl=>{
+    const done = bl.s.filter(x=>get(bl.w,x.k).done).length;
+    const cls = ['wk'];
+    if(bl.w===cur) cls.push('active');
+    if(done===3) cls.push('done');
+    else if(done>0) cls.push('partial');
+    return '<button class="'+cls.join(' ')+'" data-w="'+bl.w+'">'+bl.w+'<small>'+done+'/3</small></button>';
+  }).join('');
+  document.querySelectorAll('.wk').forEach(b=>{
+    b.onclick = ()=>{ state.week = parseInt(b.dataset.w,10); save(); renderAll(); };
+  });
+  const el = document.querySelector('.wk.active');
+  if(el && el.scrollIntoView && el.scrollIntoView.length !== 0) el.scrollIntoView({inline:'center',block:'nearest'});
+}
+
+function renderPlan(){
+  const cur = activeWeek();
+  const bl = PLAN.find(x=>x.w===cur);
+  let html = '<div class="blocklabel">'+BLOCKNAME[bl.b]+' · settimana '+bl.w+'</div>';
+  bl.s.forEach(x=>{
+    const id = sid(bl.w,x.k);
+    const d = get(bl.w,x.k);
+    const isOpen = state.open[id];
+    const cls = ['card'];
+    if(d.done) cls.push('done');
+    if(isOpen) cls.push('open');
+    const badgeMap = {A:'a',B:'b',C:'c'};
+    let badges = '<span class="badge '+badgeMap[x.k]+'">Corsa '+x.k+'</span>';
+    if(x.tag==='scarico') badges += '<span class="badge scarico">Scarico</span>';
+    if(x.tag==='test') badges += '<span class="badge test">Test</span>';
+    const km = d.km ? num(d.km) : 0;
+    const sec = parseTime(d.time);
+    const pace = fmtPace(sec, km);
+    html += '<div class="'+cls.join(' ')+'" data-id="'+id+'">'
+      + '<div class="cardtop">'
+      +   '<button class="tick" data-tick="'+id+'" aria-label="Segna come fatta">✓</button>'
+      +   '<div class="ttl">'
+      +     '<div class="badges">'+badges+'</div>'
+      +     '<div class="name">'+x.t+'</div>'
+      +     '<div class="desc">'+DAYS[x.k]+'</div>'
+      +   '</div>'
+      +   '<button class="chev" data-chev="'+id+'">'+(isOpen?'▲':'▼')+'</button>'
+      + '</div>'
+      + '<div class="log">'
+      +   '<div class="grid">'
+      +     '<div class="fld"><label>Distanza (km)</label><input inputmode="decimal" data-f="km" data-id="'+id+'" value="'+(d.km||'')+'" placeholder="es. 5,2"></div>'
+      +     '<div class="fld"><label>Tempo</label><input inputmode="text" data-f="time" data-id="'+id+'" value="'+(d.time||'')+'" placeholder="45:30"></div>'
+      +   '</div>'
+      +   '<div class="feel" data-id="'+id+'">'
+      +     '<button data-feel="facile" class="'+(d.feel==='facile'?'on':'')+'">Troppo facile</button>'
+      +     '<button data-feel="giusto" class="'+(d.feel==='giusto'?'on':'')+'">Giusto</button>'
+      +     '<button data-feel="duro" class="'+(d.feel==='duro'?'on':'')+'">Troppo duro</button>'
+      +   '</div>'
+      +   '<div class="pace" data-pace="'+id+'">'+(pace?'Ritmo medio '+pace+'/km':'')+'</div>'
+      +   '<div class="fld" style="margin-top:10px"><label>Note</label><textarea data-f="note" data-id="'+id+'" placeholder="Gambe, fiato, sonno...">'+(d.note||'')+'</textarea></div>'
+      + '</div>'
+      + '</div>';
+  });
+  document.getElementById('plan').innerHTML = html;
+  bindPlan();
+}
+
+function bindPlan(){
+  document.querySelectorAll('[data-tick]').forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.dataset.tick;
+      const cur = get(...id.split('-').map((v,i)=> i===0?parseInt(v,10):v));
+      const s = state.sessions[id] || {};
+      s.done = !s.done;
+      state.sessions[id] = s;
+      save(); renderAll();
+    };
+  });
+  document.querySelectorAll('[data-chev]').forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.dataset.chev;
+      state.open[id] = !state.open[id];
+      const card = b.closest('.card');
+      card.classList.toggle('open', !!state.open[id]);
+      b.textContent = state.open[id] ? '▲' : '▼';
+      save();
+    };
+  });
+  document.querySelectorAll('input[data-f], textarea[data-f]').forEach(inp=>{
+    inp.oninput = ()=>{
+      const id = inp.dataset.id, f = inp.dataset.f;
+      const s = state.sessions[id] || {};
+      s[f] = inp.value;
+      state.sessions[id] = s;
+      save();
+      if(f==='km' || f==='time'){
+        const km = num(s.km), sec = parseTime(s.time);
+        const p = fmtPace(sec, km);
+        const el = document.querySelector('[data-pace="'+id+'"]');
+        if(el) el.textContent = p ? 'Ritmo medio '+p+'/km' : '';
+        renderHeader();
+      }
+    };
+  });
+  document.querySelectorAll('[data-feel]').forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.parentElement.dataset.id;
+      const s = state.sessions[id] || {};
+      s.feel = (s.feel === b.dataset.feel) ? '' : b.dataset.feel;
+      state.sessions[id] = s;
+      save();
+      b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x.dataset.feel===s.feel));
+    };
+  });
+}
+
+function allSessions(){
+  const out = [];
+  PLAN.forEach(bl=>bl.s.forEach(x=>out.push({w:bl.w,k:x.k,id:sid(bl.w,x.k),d:get(bl.w,x.k)})));
+  return out;
+}
+function renderHeader(){
+  const all = allSessions();
+  const done = all.filter(x=>x.d.done).length;
+  const km = all.reduce((a,x)=>a + num(x.d.km),0);
+  document.getElementById('progtxt').textContent = done+' / '+all.length+' sedute';
+  document.getElementById('kmtxt').textContent = (Math.round(km*10)/10)+' km';
+  document.getElementById('progbar').style.width = (done/all.length*100)+'%';
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-km').textContent = Math.round(km*10)/10;
+  const tot = all.reduce((a,x)=>a + (parseTime(x.d.time)||0),0);
+  document.getElementById('s-time').textContent = tot ? fmtTime(tot) : '0h';
+  let longest = 0;
+  all.forEach(x=>{ if(num(x.d.km) > longest) longest = num(x.d.km); });
+  document.getElementById('s-long').textContent = longest ? (Math.round(longest*10)/10+' km') : '–';
+  const cur = activeWeek();
+  document.getElementById('subline').textContent = '18 settimane · settimana '+cur+' in corso';
+}
+
+function renderRefs(){
+  const items = [
+    ['Ritmo facile','8\'30"–9\'00"/km, parlando in frasi intere. Il 70-80% dei km sta qui.'],
+    ['Ordine dei pesi','Corsa prima solo il giovedì. Martedì fai come preferisci.'],
+    ['Ritmo del lungo','Deve crescere di settimana in settimana, non la velocità.'],
+    ['Dolore','Fastidio che passa = ok. Dolore che peggiora a ogni uscita = due giorni di stop.'],
+    ['Scarpe','Oltre 600-700 km o 2 anni: cambiale prima del blocco 2.'],
+    ['Saltare una settimana','Si riprende dalla stessa settimana, non da quella dopo.']
+  ];
+  document.getElementById('refs').innerHTML = items.map(i=>'<details><summary>'+i[0]+'</summary><div class="inner">'+i[1]+'</div></details>').join('');
+}
+
+function renderAll(){ renderWeeks(); renderPlan(); renderHeader(); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._x); t._x = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+document.getElementById('export').onclick = ()=>{
+  const blob = new Blob([JSON.stringify({app:'corsa10k', v:1, sessions:state.sessions}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Diario 10km ' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('Backup esportato');
+};
+document.getElementById('import').onclick = ()=> document.getElementById('file').click();
+document.getElementById('file').onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const p = JSON.parse(r.result);
+      if(!p.sessions) throw new Error('formato');
+      state.sessions = Object.assign({}, state.sessions, p.sessions);
+      save(); renderAll(); toast('Backup importato');
+    }catch(err){ toast('File non valido'); }
+  };
+  r.readAsText(f);
+};
+document.getElementById('allopen').onclick = ()=>{
+  const anyClosed = PLAN.find(b=>b.w===activeWeek()).s.some(x=>!state.open[sid(b.w,x.k)]);
+  PLAN.forEach(bl=>bl.s.forEach(x=>state.open[sid(bl.w,x.k)] = !!anyClosed));
+  save(); renderPlan();
+};
+document.getElementById('reset').onclick = ()=>{
+  if(confirm('Cancellare tutte le sedute e i dati registrati?')){
+    state.sessions = {}; save(); renderAll(); toast('Diario azzerato');
+  }
+};
+
+load();
+renderAll();
+renderRefs();
+</script>
+<script>
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
