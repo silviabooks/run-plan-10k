@@ -98,6 +98,8 @@
     border-radius:10px;padding:9px 4px;font-size:12.5px;font-weight:600;font-family:inherit;
   }
   .feel button.on{background:var(--accent);border-color:var(--accent);color:#0f1318}
+  .target{font-size:12.5px;color:var(--accent2);font-weight:650;margin-top:7px;line-height:1.45}
+  .target b{color:var(--dim);font-weight:600}
   .pace{font-size:12.5px;color:var(--accent2);margin-top:9px;min-height:16px;font-weight:600}
   .hint{font-size:12px;color:var(--dim);margin-top:9px}
 
@@ -215,77 +217,77 @@
 <script>
 const PLAN = [
  {w:1,b:1,s:[
-   {k:'A',t:'25\': 1\' corsa / 1\' cammino × 12'},
-   {k:'B',t:'25\': 90" corsa / 60" cammino × 10'},
-   {k:'C',t:'30\': 2\' corsa / 1\' cammino × 10'}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 1\' corsa / 1\' cammino × 12'},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 90" corsa / 60" cammino × 10'},
+   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10'}]},
  {w:2,b:1,s:[
-   {k:'A',t:'30\': 2\' corsa / 1\' cammino × 10'},
-   {k:'B',t:'30\': 3\' corsa / 1\' cammino × 7'},
-   {k:'C',t:'35\': 3\' corsa / 1\' cammino × 9'}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10'},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 3\' corsa / 1\' cammino × 7'},
+   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'35\': 3\' corsa / 1\' cammino × 9'}]},
  {w:3,b:1,s:[
-   {k:'A',t:'30\': 4\' corsa / 1\' cammino × 6'},
-   {k:'B',t:'32\': 5\' corsa / 1\' cammino × 5'},
-   {k:'C',t:'38\': 5\' corsa / 1\' cammino × 6'}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 4\' corsa / 1\' cammino × 6'},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'32\': 5\' corsa / 1\' cammino × 5'},
+   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'38\': 5\' corsa / 1\' cammino × 6'}]},
  {w:4,b:1,s:[
-   {k:'A',t:'25\' facile, con qualche pausa di cammino',tag:'scarico'},
-   {k:'B',t:'28\': 4\' corsa / 1\' cammino'},
-   {k:'C',t:'30\' corsa facile'}]},
+   {k:'A',p:'8\'30"–9\'00"/km, senza forzare',t:'25\' facile, con qualche pausa di cammino',tag:'scarico'},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'28\': 4\' corsa / 1\' cammino'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'30\' corsa facile'}]},
  {w:5,b:1,s:[
-   {k:'A',t:'30\' corsa continua facile'},
-   {k:'B',t:'32\' corsa continua facile'},
-   {k:'C',t:'40\' continuo — concessi 2\' di cammino'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' corsa continua facile'},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'32\' corsa continua facile'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'40\' continuo — concessi 2\' di cammino'}]},
  {w:6,b:1,s:[
-   {k:'A',t:'35\' corsa continua'},
-   {k:'B',t:'35\' con 3 × 3\' moderato, 2\' facile in mezzo'},
-   {k:'C',t:'45\' corsa continua — circa 5 km',tag:'test'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' corsa continua'},
+   {k:'B',p:'facile 8\'30"–9\'00" · i 3\' moderati a 6\'50"–7\'10"',t:'35\' con 3 × 3\' moderato, 2\' facile in mezzo'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'45\' corsa continua — circa 5 km',tag:'test'}]},
  {w:7,b:2,s:[
-   {k:'A',t:'35\' facile'},
-   {k:'B',t:'6 × 2\' forte, 90" di recupero'},
-   {k:'C',t:'50\' facile — circa 6 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
+   {k:'B',p:'2\' forti a 6\'15"–6\'30" · recupero a 9\'00"',t:'6 × 2\' forte, 90" di recupero'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'50\' facile — circa 6 km'}]},
  {w:8,b:2,s:[
-   {k:'A',t:'35\' facile'},
-   {k:'B',t:'5 × 4\' forte, 2\' di recupero'},
-   {k:'C',t:'55\' facile — circa 6,5 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
+   {k:'B',p:'4\' forti a 6\'15"–6\'30" · recupero a 9\'00"',t:'5 × 4\' forte, 2\' di recupero'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'55\' facile — circa 6,5 km'}]},
  {w:9,b:2,s:[
-   {k:'A',t:'35\' facile'},
-   {k:'B',t:'2 × 8\' moderato, 3\' di recupero'},
-   {k:'C',t:'60\' facile — circa 7 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
+   {k:'B',p:'8\' a 6\'50"–7\'10" · recupero facile',t:'2 × 8\' moderato, 3\' di recupero'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'60\' facile — circa 7 km'}]},
  {w:10,b:2,s:[
-   {k:'A',t:'30\' facile',tag:'scarico'},
-   {k:'B',t:'6 × 2\' moderato'},
-   {k:'C',t:'45\' facile'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' facile',tag:'scarico'},
+   {k:'B',p:'2\' a 6\'50"–7\'10" · recupero facile',t:'6 × 2\' moderato'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'45\' facile'}]},
  {w:11,b:2,s:[
-   {k:'A',t:'35\' facile'},
-   {k:'B',t:'3 × 8\' moderato, 3\' di recupero'},
-   {k:'C',t:'65\' facile — circa 8 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
+   {k:'B',p:'8\' a 6\'45"–7\'00" · recupero facile',t:'3 × 8\' moderato, 3\' di recupero'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'65\' facile — circa 8 km'}]},
  {w:12,b:2,s:[
-   {k:'A',t:'30\' facile + 4 × 20" veloci'},
-   {k:'B',t:'Test 5 km a tutta, dopo 12\' di riscaldamento',tag:'test'},
-   {k:'C',t:'60\' facile'}]},
+   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'30\' facile + 4 × 20" veloci'},
+   {k:'B',p:'test: parti a 7\'00", chiudi a 6\'30"',t:'Test 5 km a tutta, dopo 12\' di riscaldamento',tag:'test'},
+   {k:'C',p:'8\'30"–9\'00"/km',t:'60\' facile'}]},
  {w:13,b:3,s:[
-   {k:'A',t:'35\' facile'},
-   {k:'B',t:'5 × 5\' a 6\'15"–6\'30", 2\'30" di recupero'},
-   {k:'C',t:'70\' facile — circa 8,5 km'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'35\' facile'},
+   {k:'B',p:'5\' a 6\'15"–6\'30" · recupero 2\'30" a 9\'00"',t:'5 × 5\' a 6\'15"–6\'30", 2\'30" di recupero'},
+   {k:'C',p:'8\'15"–8\'45"/km',t:'70\' facile — circa 8,5 km'}]},
  {w:14,b:3,s:[
-   {k:'A',t:'35\' facile'},
-   {k:'B',t:'20\' continuo a 6\'40"–6\'50"'},
-   {k:'C',t:'75\' facile — circa 9 km'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'35\' facile'},
+   {k:'B',p:'20\' continui a 6\'40"–6\'50"',t:'20\' continuo a 6\'40"–6\'50"'},
+   {k:'C',p:'8\'15"–8\'45"/km',t:'75\' facile — circa 9 km'}]},
  {w:15,b:3,s:[
-   {k:'A',t:'35\' facile'},
-   {k:'B',t:'3 × 8\' a 6\'15", 3\' di recupero'},
-   {k:'C',t:'80\' facile — circa 9,5 km'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'35\' facile'},
+   {k:'B',p:'8\' a 6\'15" · recupero 3\' facile',t:'3 × 8\' a 6\'15", 3\' di recupero'},
+   {k:'C',p:'8\'15"–8\'45"/km',t:'80\' facile — circa 9,5 km'}]},
  {w:16,b:3,s:[
-   {k:'A',t:'30\' facile',tag:'scarico'},
-   {k:'B',t:'3 × 5\' a 6\'10", 3\' di recupero'},
-   {k:'C',t:'60\' facile'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',tag:'scarico'},
+   {k:'B',p:'5\' a 6\'10" · recupero 3\' facile',t:'3 × 5\' a 6\'10", 3\' di recupero'},
+   {k:'C',p:'8\'15"–8\'45"/km',t:'60\' facile'}]},
  {w:17,b:3,s:[
-   {k:'A',t:'30\' facile + 4 × 20" veloci'},
-   {k:'B',t:'4 × 5\' a 6\'05", 2\'30" di recupero'},
-   {k:'C',t:'50-60\' facile'}]},
+   {k:'A',p:'8\'15"–8\'45"/km · le 4 × 20" quasi a tutta',t:'30\' facile + 4 × 20" veloci'},
+   {k:'B',p:'5\' a 6\'05" · recupero 2\'30"',t:'4 × 5\' a 6\'05", 2\'30" di recupero'},
+   {k:'C',p:'8\'15"–8\'45"/km',t:'50-60\' facile'}]},
  {w:18,b:3,s:[
-   {k:'A',t:'25\' facile + 4 × 20" veloci'},
-   {k:'B',t:'20\' facile'},
-   {k:'C',t:'10 km — parti a 6\'10", chiudi a 5\'50"',tag:'test'}]}
+   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'25\' facile + 4 × 20" veloci'},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'20\' facile'},
+   {k:'C',p:'parti a 6\'10" e chiudi a 5\'50"',t:'10 km — parti a 6\'10", chiudi a 5\'50"',tag:'test'}]}
 ];
 
 const DAYS = {A:'martedì + Giorno 1', B:'giovedì + Giorno 2', C:'sabato, solo corsa'};
@@ -384,6 +386,7 @@ function renderPlan(){
       +     '<div class="badges">'+badges+'</div>'
       +     '<div class="name">'+x.t+'</div>'
       +     '<div class="desc">'+DAYS[x.k]+'</div>'
+      +     (x.p ? '<div class="target"><b>Ritmo</b> · '+x.p+'</div>' : '')
       +   '</div>'
       +   '<button class="chev" data-chev="'+id+'">'+(isOpen?'▲':'▼')+'</button>'
       + '</div>'
