@@ -16,6 +16,7 @@ Funziona offline dopo il primo caricamento e si installa sulla schermata home.
 ## Note
 
 - I dati sono salvati nel browser del telefono (localStorage), non sul server.
+- Le sedute a intervalli includono un timer con segnali sonori ai cambi tra corsa e camminata.
 - Esporta un backup ogni tanto dal pulsante in fondo alla pagina.
-- Se aggiorni `index.html` in futuro, incrementa `CACHE` in `sw.js` (`corsa10k-v2`)
+- Se aggiorni `index.html` in futuro, incrementa `CACHE` in `sw.js` (`corsa10k-v3`)
   per forzare il refresh della cache sul telefono.

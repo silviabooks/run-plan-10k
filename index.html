@@ -102,6 +102,20 @@
   .target b{color:var(--dim);font-weight:600}
   .pace{font-size:12.5px;color:var(--accent2);margin-top:9px;min-height:16px;font-weight:600}
   .hint{font-size:12px;color:var(--dim);margin-top:9px}
+  .interval-timer{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-top:12px;padding:12px;background:var(--card2);border-radius:12px;
+  }
+  .timer-phase{font-size:12px;color:var(--dim);font-weight:650}
+  .timer-readout{font-size:28px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+  .timer-progress{font-size:11px;color:var(--dim);margin-top:3px}
+  .timer-controls{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+  .timer-controls .btn{flex:0 1 auto;min-width:0;padding:10px 12px}
+  @media(max-width:380px){
+    .interval-timer{align-items:flex-start;flex-direction:column}
+    .timer-controls{width:100%;justify-content:stretch}
+    .timer-controls .btn{flex:1}
+  }
 
   .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:6px 0 0}
   .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
@@ -217,20 +231,20 @@
 <script>
 const PLAN = [
  {w:1,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 1\' corsa / 1\' cammino × 12'},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 90" corsa / 60" cammino × 10'},
-   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10'}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 1\' corsa / 1\' cammino × 12',interval:{run:60,walk:60,repeats:12}},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 90" corsa / 60" cammino × 10',interval:{run:90,walk:60,repeats:10}},
+   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}}]},
  {w:2,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10'},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 3\' corsa / 1\' cammino × 7'},
-   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'35\': 3\' corsa / 1\' cammino × 9'}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 3\' corsa / 1\' cammino × 7',interval:{run:180,walk:60,repeats:7}},
+   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'35\': 3\' corsa / 1\' cammino × 9',interval:{run:180,walk:60,repeats:9}}]},
  {w:3,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 4\' corsa / 1\' cammino × 6'},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'32\': 5\' corsa / 1\' cammino × 5'},
-   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'38\': 5\' corsa / 1\' cammino × 6'}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 4\' corsa / 1\' cammino × 6',interval:{run:240,walk:60,repeats:6}},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'32\': 5\' corsa / 1\' cammino × 5',interval:{run:300,walk:60,repeats:5}},
+   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'38\': 5\' corsa / 1\' cammino × 6',interval:{run:300,walk:60,repeats:6}}]},
  {w:4,b:1,s:[
    {k:'A',p:'8\'30"–9\'00"/km, senza forzare',t:'25\' facile, con qualche pausa di cammino',tag:'scarico'},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'28\': 4\' corsa / 1\' cammino'},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'28\': 4\' corsa / 1\' cammino',interval:{run:240,walk:60,duration:28*60}},
    {k:'C',p:'8\'30"–9\'00"/km',t:'30\' corsa facile'}]},
  {w:5,b:1,s:[
    {k:'A',p:'8\'30"–9\'00"/km',t:'30\' corsa continua facile'},
@@ -296,6 +310,10 @@ const KEY = 'corsa10k.v1';
 
 let state = {sessions:{}, open:{}, week:null};
 let memoryOnly = false;
+let intervalTimer = null;
+let intervalTicker = null;
+let timerAudio = null;
+let timerAudioUnavailable = false;
 
 function load(){
   try{
@@ -334,7 +352,174 @@ function fmtPace(sec, km){
   const p = Math.round(sec/km);
   return Math.floor(p/60)+"'"+String(p%60).padStart(2,'0')+'"';
 }
+function fmtTimer(sec){
+  const total = Math.max(0, Math.ceil(sec));
+  return String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0');
+}
 function num(v){ const n = parseFloat(String(v).replace(',','.')); return isNaN(n)?0:n; }
+
+function timerSteps(interval){
+  const steps = [];
+  let remaining = interval.duration || Infinity;
+  const repetitions = interval.repeats || Math.ceil(remaining/(interval.run+interval.walk));
+  for(let cycle=1;cycle<=repetitions && remaining>0;cycle++){
+    for(const phase of [{kind:'run',duration:interval.run},{kind:'walk',duration:interval.walk}]){
+      if(remaining<=0) break;
+      const duration = Math.min(phase.duration,remaining);
+      steps.push({kind:phase.kind,duration,cycle});
+      remaining -= duration;
+    }
+  }
+  return steps;
+}
+
+function timerPosition(elapsed, steps){
+  let boundary = 0;
+  for(let i=0;i<steps.length;i++){
+    boundary += steps[i].duration;
+    if(elapsed<boundary) return {stepIndex:i,remaining:boundary-elapsed,done:false};
+  }
+  return {stepIndex:steps.length,remaining:0,done:true};
+}
+
+function timerElapsed(){
+  if(!intervalTimer) return 0;
+  return intervalTimer.elapsed+(intervalTimer.running?(Date.now()-intervalTimer.startedAt)/1000:0);
+}
+
+function playTimerSound(count){
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if(!AudioContext){
+    if(!timerAudioUnavailable) toast('Audio non supportato: il timer continua senza suono.');
+    timerAudioUnavailable = true;
+    return;
+  }
+  try{
+    if(!timerAudio) timerAudio = new AudioContext();
+    const sound = ()=>{
+      for(let i=0;i<count;i++){
+        const eventStart = timerAudio.currentTime+i*0.38;
+        [1100,1500].forEach((frequency,index)=>{
+          const startAt = eventStart+index*0.14;
+          const oscillator = timerAudio.createOscillator();
+          const gain = timerAudio.createGain();
+          oscillator.type = 'sine';
+          oscillator.frequency.value = frequency;
+          gain.gain.setValueAtTime(0.0001,startAt);
+          gain.gain.exponentialRampToValueAtTime(0.32,startAt+0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001,startAt+0.11);
+          oscillator.connect(gain);
+          gain.connect(timerAudio.destination);
+          oscillator.start(startAt);
+          oscillator.stop(startAt+0.12);
+        });
+      }
+    };
+    if(timerAudio.state==='running') sound();
+    else timerAudio.resume().then(sound).catch(()=>toast('Impossibile riprodurre il suono. Controlla le impostazioni audio del dispositivo.'));
+  }catch(e){
+    toast('Impossibile riprodurre il suono. Controlla le impostazioni audio del dispositivo.');
+  }
+}
+
+function timerMarkup(id,interval){
+  const steps = timerSteps(interval);
+  const total = steps.reduce((sum,step)=>sum+step.duration,0);
+  const current = intervalTimer && intervalTimer.id===id ? intervalTimer : null;
+  const elapsed = current ? timerElapsed() : 0;
+  const position = timerPosition(elapsed,steps);
+  const step = steps[position.stepIndex] || steps[steps.length-1];
+  const phase = position.done ? 'Completato' : step.kind==='run' ? 'Corsa' : 'Camminata';
+  const readout = position.done ? '00:00' : fmtTimer(position.remaining);
+  const progress = position.done ? 'Seduta completata' :
+    interval.repeats ? 'Ripetizione '+step.cycle+' di '+interval.repeats :
+      'Seduta di '+fmtTimer(total);
+  const label = current && current.running ? 'Pausa' :
+    current && !position.done && elapsed>0 ? 'Riprendi' :
+      position.done ? 'Ricomincia' : 'Avvia';
+  return '<div class="interval-timer" role="group" aria-label="Timer corsa e camminata">'
+    +'<div><div class="timer-phase" data-timer-phase="'+id+'" aria-live="polite">'+phase+'</div>'
+    +'<div class="timer-readout" data-timer-readout="'+id+'">'+readout+'</div>'
+    +'<div class="timer-progress" data-timer-progress="'+id+'">'+progress+'</div></div>'
+    +'<div class="timer-controls">'
+    +'<button type="button" class="btn pri" data-timer-toggle="'+id+'">'+label+'</button>'
+    +'<button type="button" class="btn" data-timer-reset="'+id+'">Azzera</button>'
+    +'</div></div>'
+    +'<div class="hint">Il timer segue gli intervalli di questa seduta. Tieni aperta l’app per sentire i segnali.</div>';
+}
+
+function updateTimerDisplay(){
+  if(!intervalTimer) return;
+  const week = parseInt(intervalTimer.id.split('-')[0],10);
+  const key = intervalTimer.id.split('-')[1];
+  const workout = PLAN.find(bl=>bl.w===week).s.find(item=>item.k===key);
+  const steps = timerSteps(workout.interval);
+  const total = steps.reduce((sum,step)=>sum+step.duration,0);
+  const elapsed = timerElapsed();
+  const position = timerPosition(elapsed,steps);
+  const step = steps[position.stepIndex] || steps[steps.length-1];
+  const phase = position.done ? 'Completato' : step.kind==='run' ? 'Corsa' : 'Camminata';
+  const readout = position.done ? '00:00' : fmtTimer(position.remaining);
+  const progress = position.done ? 'Seduta completata' :
+    workout.interval.repeats ? 'Ripetizione '+step.cycle+' di '+workout.interval.repeats :
+      'Seduta di '+fmtTimer(total);
+  document.querySelectorAll('[data-timer-phase="'+intervalTimer.id+'"]').forEach(el=>el.textContent=phase);
+  document.querySelectorAll('[data-timer-readout="'+intervalTimer.id+'"]').forEach(el=>el.textContent=readout);
+  document.querySelectorAll('[data-timer-progress="'+intervalTimer.id+'"]').forEach(el=>el.textContent=progress);
+  document.querySelectorAll('[data-timer-toggle="'+intervalTimer.id+'"]').forEach(el=>{
+    el.textContent = intervalTimer.running ? 'Pausa' :
+      position.done ? 'Ricomincia' : elapsed>0 ? 'Riprendi' : 'Avvia';
+  });
+  if(!intervalTimer.running) return;
+  if(position.done){
+    const crossed = Math.max(1,position.stepIndex-intervalTimer.stepIndex);
+    intervalTimer.elapsed = total;
+    intervalTimer.running = false;
+    clearInterval(intervalTicker);
+    intervalTicker = null;
+    playTimerSound(crossed);
+    toast('Seduta completata!');
+    updateTimerDisplay();
+  }else if(position.stepIndex!==intervalTimer.stepIndex){
+    playTimerSound(position.stepIndex-intervalTimer.stepIndex);
+    intervalTimer.stepIndex = position.stepIndex;
+  }
+}
+
+function toggleIntervalTimer(id,interval){
+  if(intervalTimer && intervalTimer.id===id && intervalTimer.running){
+    intervalTimer.elapsed = timerElapsed();
+    intervalTimer.running = false;
+    clearInterval(intervalTicker);
+    intervalTicker = null;
+    updateTimerDisplay();
+    return;
+  }
+  const replacingTimer = intervalTimer && intervalTimer.id!==id && intervalTimer.running;
+  if(intervalTimer && intervalTimer.id===id && timerPosition(timerElapsed(),timerSteps(interval)).stepIndex===timerSteps(interval).length){
+    intervalTimer.elapsed = 0;
+    intervalTimer.stepIndex = 0;
+  }else if(!intervalTimer || intervalTimer.id!==id){
+    intervalTimer = {id,elapsed:0,stepIndex:0,running:false,startedAt:0};
+  }
+  intervalTimer.startedAt = Date.now();
+  intervalTimer.running = true;
+  clearInterval(intervalTicker);
+  intervalTicker = setInterval(updateTimerDisplay,250);
+  if(replacingTimer) toast('Timer precedente interrotto.');
+  playTimerSound(1);
+  updateTimerDisplay();
+}
+
+function resetIntervalTimer(id){
+  if(!intervalTimer || intervalTimer.id!==id) return;
+  clearInterval(intervalTicker);
+  intervalTicker = null;
+  intervalTimer.elapsed = 0;
+  intervalTimer.stepIndex = 0;
+  intervalTimer.running = false;
+  updateTimerDisplay();
+}
 
 function activeWeek(){
   if(state.week) return state.week;
@@ -365,6 +550,13 @@ function renderPlan(){
   const cur = activeWeek();
   const bl = PLAN.find(x=>x.w===cur);
   let html = '<div class="blocklabel">'+BLOCKNAME[bl.b]+' · settimana '+bl.w+'</div>';
+  if(intervalTimer && !bl.s.some(item=>sid(bl.w,item.k)===intervalTimer.id)){
+    const timerWeek = parseInt(intervalTimer.id.split('-')[0],10);
+    const timerKey = intervalTimer.id.split('-')[1];
+    html += '<div class="card"><div class="name">Timer attivo · settimana '+timerWeek+' · Corsa '+timerKey+'</div>'
+      + timerMarkup(intervalTimer.id,PLAN.find(item=>item.w===timerWeek).s.find(item=>item.k===timerKey).interval)
+      + '</div>';
+  }
   bl.s.forEach(x=>{
     const id = sid(bl.w,x.k);
     const d = get(bl.w,x.k);
@@ -390,6 +582,7 @@ function renderPlan(){
       +   '</div>'
       +   '<button class="chev" data-chev="'+id+'">'+(isOpen?'▲':'▼')+'</button>'
       + '</div>'
+        + (x.interval ? timerMarkup(id,x.interval) : '')
       + '<div class="log">'
       +   '<div class="grid">'
       +     '<div class="fld"><label>Distanza (km)</label><input inputmode="decimal" data-f="km" data-id="'+id+'" value="'+(d.km||'')+'" placeholder="es. 5,2"></div>'
@@ -455,6 +648,18 @@ function bindPlan(){
       save();
       b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x.dataset.feel===s.feel));
     };
+  });
+  document.querySelectorAll('[data-timer-toggle]').forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.dataset.timerToggle;
+      const week = parseInt(id.split('-')[0],10);
+      const key = id.split('-')[1];
+      const interval = PLAN.find(bl=>bl.w===week).s.find(item=>item.k===key).interval;
+      toggleIntervalTimer(id,interval);
+    };
+  });
+  document.querySelectorAll('[data-timer-reset]').forEach(b=>{
+    b.onclick = ()=>resetIntervalTimer(b.dataset.timerReset);
   });
 }
 
