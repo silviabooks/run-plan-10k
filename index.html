@@ -111,6 +111,13 @@
   .timer-progress{font-size:11px;color:var(--dim);margin-top:3px}
   .timer-controls{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
   .timer-controls .btn{flex:0 1 auto;min-width:0;padding:10px 12px}
+  .timer-alerts{margin-top:9px;padding:10px 12px;background:rgba(255,138,76,.07);border:1px solid rgba(255,138,76,.22);border-radius:11px}
+  .al-title{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);font-weight:700;margin-bottom:6px}
+  .al{display:flex;gap:9px;align-items:baseline;font-size:12.5px;line-height:1.4;padding:3px 0}
+  .al-t{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent2);min-width:44px}
+  .al-m{flex:1}
+  .al.fired .al-t{color:var(--dim)}
+  .al.fired .al-m{color:var(--dim);text-decoration:line-through;text-decoration-thickness:1px}
   @media(max-width:380px){
     .interval-timer{align-items:flex-start;flex-direction:column}
     .timer-controls{width:100%;justify-content:stretch}
@@ -204,6 +211,8 @@
       <br><br>
       <b>La settimana:</b> martedì corsa A (facile) + Giorno 1 · giovedì Giorno 2 · sabato corsa B (seduta chiave), da sola · domenica Giorno 3. Martedì corri quando preferisci, prima o dopo i pesi; il sabato è solo corsa.
       <br><br>
+      <b>Due timer.</b> Il primo scandisce corsa e camminata. Il secondo, nel riquadro arancione sotto, conta quanto manca a ogni cambio di ritmo previsto dalla seduta (per esempio «ultimi 3 km: alza a 6'50"»). Si avvia insieme al primo e suona tre volte quando è il momento.
+      <br><br>
       <b>Checkpoint settimana 6:</b> 45' continuo. <b>Settimana 12 (sabato):</b> test 5 km — sotto 30' sei in linea per l'ora. Con due sedute a settimana il volume conta più della velocità: il lavoro di qualità sta negli ultimi chilometri della corsa lunga.
     </div>
   </details>
@@ -231,60 +240,466 @@
 
 <script>
 const PLAN = [
- {w:1,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'20\': 1\' corsa / 1\' cammino × 10',interval:{run:60,walk:60,repeats:10}},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 1\' corsa / 1\' cammino × 12',interval:{run:60,walk:60,repeats:12}}]},
- {w:2,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 2\' corsa / 1\' cammino × 8',interval:{run:120,walk:60,repeats:8}},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}}]},
- {w:3,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'28\': 3\' corsa / 1\' cammino × 7',interval:{run:180,walk:60,repeats:7}},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'35\': 3\' corsa / 1\' cammino × 9',interval:{run:180,walk:60,repeats:9}}]},
- {w:4,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km, senza forzare',t:'25\' facile, con qualche pausa di cammino',tag:'scarico',interval:{continuous:25*60}},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}}]},
- {w:5,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' corsa continua facile',interval:{continuous:30*60}},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'40\' continuo — concessi 2\' di cammino',interval:{continuous:40*60}}]},
- {w:6,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' corsa continua facile',interval:{continuous:30*60}},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'45\' corsa continua — circa 5 km',tag:'test',interval:{continuous:45*60}}]},
- {w:7,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' facile',interval:{continuous:30*60}},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'50\' facile — circa 6 km',interval:{continuous:50*60}}]},
- {w:8,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'32\' facile',interval:{continuous:32*60}},
-   {k:'B',p:'8\'30"–9\'00"/km · ultimo km a 7\'00"',t:'55\' facile — circa 6,5 km, con l\'ultimo km un po\' più svelto',interval:{continuous:55*60}}]},
- {w:9,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'32\' facile',interval:{continuous:32*60}},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'60\' facile — circa 7 km',interval:{continuous:60*60}}]},
- {w:10,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'25\' facile',tag:'scarico',interval:{continuous:25*60}},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'40\' facile',interval:{continuous:40*60}}]},
- {w:11,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'30\' facile + 4 × 20" veloci',interval:{continuous:30*60}},
-   {k:'B',p:'8\'30"–9\'00"/km · ultimi 2 km a 7\'00"–7\'10"',t:'65\' — circa 7,5 km, con gli ultimi 2 km moderati',interval:{continuous:65*60}}]},
- {w:12,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'25\' facile',interval:{continuous:25*60}},
-   {k:'B',p:'test: parti a 7\'00", chiudi a 6\'30"',t:'Test 5 km a tutta, dopo 12\' di riscaldamento',tag:'test'}]},
- {w:13,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',interval:{continuous:30*60}},
-   {k:'B',p:'facile 8\'30" · ultimi 3 km a 6\'50"',t:'70\' — circa 8,5 km, con gli ultimi 3 km a ritmo moderato',interval:{continuous:70*60}}]},
- {w:14,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',interval:{continuous:30*60}},
-   {k:'B',p:'facile 8\'30" · 2 × 10\' a 6\'45"',t:'75\' con 2 × 10\' a 6\'45", 3\' facile in mezzo',interval:{continuous:75*60}}]},
- {w:15,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',interval:{continuous:30*60}},
-   {k:'B',p:'8\'15"–8\'45"/km',t:'75\' facile — circa 9 km',interval:{continuous:75*60}}]},
- {w:16,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'25\' facile',tag:'scarico',interval:{continuous:25*60}},
-   {k:'B',p:'8\'15"–8\'45"/km',t:'50\' facile',interval:{continuous:50*60}}]},
- {w:17,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km · le 4 × 20" quasi a tutta',t:'25\' facile + 4 × 20" veloci',interval:{continuous:25*60}},
-   {k:'B',p:'facile 8\'30" · ultimi 3 km a 6\'20"–6\'30"',t:'60\' — circa 7 km, con gli ultimi 3 km a ritmo gara',interval:{continuous:60*60}}]},
- {w:18,b:3,s:[
-   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'20\' facile + 4 × 20" veloci',interval:{continuous:20*60}},
-   {k:'B',p:'parti a 6\'10" e chiudi a 5\'50"',t:'10 km — parti a 6\'10", chiudi a 5\'50"',tag:'test'}]}
+ {
+  "w": 1,
+  "b": 1,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km nei tratti di corsa",
+    "t": "20': 1' corsa / 1' cammino × 10",
+    "interval": {
+     "run": 60,
+     "walk": 60,
+     "repeats": 10
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km nei tratti di corsa",
+    "t": "25': 1' corsa / 1' cammino × 12",
+    "interval": {
+     "run": 60,
+     "walk": 60,
+     "repeats": 12
+    }
+   }
+  ]
+ },
+ {
+  "w": 2,
+  "b": 1,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km nei tratti di corsa",
+    "t": "25': 2' corsa / 1' cammino × 8",
+    "interval": {
+     "run": 120,
+     "walk": 60,
+     "repeats": 8
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km nei tratti di corsa",
+    "t": "30': 2' corsa / 1' cammino × 10",
+    "interval": {
+     "run": 120,
+     "walk": 60,
+     "repeats": 10
+    }
+   }
+  ]
+ },
+ {
+  "w": 3,
+  "b": 1,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km nei tratti di corsa",
+    "t": "28': 3' corsa / 1' cammino × 7",
+    "interval": {
+     "run": 180,
+     "walk": 60,
+     "repeats": 7
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km nei tratti di corsa",
+    "t": "35': 3' corsa / 1' cammino × 9",
+    "interval": {
+     "run": 180,
+     "walk": 60,
+     "repeats": 9
+    }
+   }
+  ]
+ },
+ {
+  "w": 4,
+  "b": 1,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km, senza forzare",
+    "t": "25' facile, con qualche pausa di cammino",
+    "tag": "scarico",
+    "interval": {
+     "continuous": 1500
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km",
+    "t": "30': 2' corsa / 1' cammino × 10",
+    "interval": {
+     "run": 120,
+     "walk": 60,
+     "repeats": 10
+    }
+   }
+  ]
+ },
+ {
+  "w": 5,
+  "b": 1,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km",
+    "t": "30' corsa continua facile",
+    "interval": {
+     "continuous": 1800
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km",
+    "t": "40' continuo — concessi 2' di cammino",
+    "interval": {
+     "continuous": 2400
+    },
+    "alert": {
+     "at": 1500,
+     "msg": "Se serve, 2' di cammino: poi riparti."
+    }
+   }
+  ]
+ },
+ {
+  "w": 6,
+  "b": 1,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km",
+    "t": "30' corsa continua facile",
+    "interval": {
+     "continuous": 1800
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km",
+    "t": "45' corsa continua — circa 5 km",
+    "tag": "test",
+    "interval": {
+     "continuous": 2700
+    },
+    "alert": {
+     "at": 1800,
+     "msg": "30': se il fiato regge continua, altrimenti chiudi qui. Va bene lo stesso."
+    }
+   }
+  ]
+ },
+ {
+  "w": 7,
+  "b": 2,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km",
+    "t": "30' facile",
+    "interval": {
+     "continuous": 1800
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km",
+    "t": "50' facile — circa 6 km",
+    "interval": {
+     "continuous": 3000
+    },
+    "alert": {
+     "at": 1800,
+     "msg": "Metà seduta: se non riesci a parlare, rallenta."
+    }
+   }
+  ]
+ },
+ {
+  "w": 8,
+  "b": 2,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km",
+    "t": "32' facile",
+    "interval": {
+     "continuous": 1920
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km · ultimo km a 7'00\"",
+    "t": "55' facile — circa 6,5 km, con l'ultimo km un po' più svelto",
+    "interval": {
+     "continuous": 3300
+    },
+    "alert": {
+     "at": 2880,
+     "msg": "Ultimo km: alza a 7'00\"/km."
+    }
+   }
+  ]
+ },
+ {
+  "w": 9,
+  "b": 2,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km",
+    "t": "32' facile",
+    "interval": {
+     "continuous": 1920
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km",
+    "t": "60' facile — circa 7 km",
+    "interval": {
+     "continuous": 3600
+    },
+    "alert": {
+     "at": 1800,
+     "msg": "Metà seduta: controlla il fiato, non l'orologio."
+    }
+   }
+  ]
+ },
+ {
+  "w": 10,
+  "b": 2,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km",
+    "t": "25' facile",
+    "tag": "scarico",
+    "interval": {
+     "continuous": 1500
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km",
+    "t": "40' facile",
+    "interval": {
+     "continuous": 2400
+    }
+   }
+  ]
+ },
+ {
+  "w": 11,
+  "b": 2,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km · le 4 × 20\" quasi a tutta",
+    "t": "30' facile + 4 × 20\" veloci",
+    "interval": {
+     "continuous": 1800
+    },
+    "alert": {
+     "at": 1500,
+     "msg": "4 × 20\" veloci, 60\" di cammino tra una e l'altra."
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'30\"–9'00\"/km · ultimi 2 km a 7'00\"–7'10\"",
+    "t": "65' — circa 7,5 km, con gli ultimi 2 km moderati",
+    "interval": {
+     "continuous": 3900
+    },
+    "alert": {
+     "at": 3060,
+     "msg": "Ultimi 2 km: alza a 7'00\"–7'10\"/km."
+    }
+   }
+  ]
+ },
+ {
+  "w": 12,
+  "b": 2,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km",
+    "t": "25' facile",
+    "interval": {
+     "continuous": 1500
+    }
+   },
+   {
+    "k": "B",
+    "p": "test: parti a 7'00\", chiudi a 6'30\"",
+    "t": "Test 5 km a tutta, dopo 12' di riscaldamento",
+    "tag": "test"
+   }
+  ]
+ },
+ {
+  "w": 13,
+  "b": 3,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'15\"–8'45\"/km",
+    "t": "30' facile",
+    "interval": {
+     "continuous": 1800
+    }
+   },
+   {
+    "k": "B",
+    "p": "facile 8'30\" · ultimi 3 km a 6'50\"",
+    "t": "70' — circa 8,5 km, con gli ultimi 3 km a ritmo moderato",
+    "interval": {
+     "continuous": 4200
+    },
+    "alert": {
+     "at": 2940,
+     "msg": "Ultimi 3 km: alza a 6'50\"/km."
+    }
+   }
+  ]
+ },
+ {
+  "w": 14,
+  "b": 3,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'15\"–8'45\"/km",
+    "t": "30' facile",
+    "interval": {
+     "continuous": 1800
+    }
+   },
+   {
+    "k": "B",
+    "p": "facile 8'30\" · 2 × 10' a 6'45\"",
+    "t": "75' con 2 × 10' a 6'45\", 3' facile in mezzo",
+    "interval": {
+     "continuous": 4500
+    },
+    "alert": [
+     {
+      "at": 1500,
+      "msg": "Primo blocco: 10' a 6'45\"/km."
+     },
+     {
+      "at": 2280,
+      "msg": "Secondo blocco: 10' a 6'45\"/km."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "w": 15,
+  "b": 3,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'15\"–8'45\"/km",
+    "t": "30' facile",
+    "interval": {
+     "continuous": 1800
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'15\"–8'45\"/km",
+    "t": "75' facile — circa 9 km",
+    "interval": {
+     "continuous": 4500
+    },
+    "alert": {
+     "at": 2220,
+     "msg": "Metà seduta: facile, devi poter parlare."
+    }
+   }
+  ]
+ },
+ {
+  "w": 16,
+  "b": 3,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'15\"–8'45\"/km",
+    "t": "25' facile",
+    "tag": "scarico",
+    "interval": {
+     "continuous": 1500
+    }
+   },
+   {
+    "k": "B",
+    "p": "8'15\"–8'45\"/km",
+    "t": "50' facile",
+    "interval": {
+     "continuous": 3000
+    }
+   }
+  ]
+ },
+ {
+  "w": 17,
+  "b": 3,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'15\"–8'45\"/km · le 4 × 20\" quasi a tutta",
+    "t": "25' facile + 4 × 20\" veloci",
+    "interval": {
+     "continuous": 1500
+    }
+   },
+   {
+    "k": "B",
+    "p": "facile 8'30\" · ultimi 3 km a 6'20\"–6'30\"",
+    "t": "60' — circa 7 km, con gli ultimi 3 km a ritmo gara",
+    "interval": {
+     "continuous": 3600
+    },
+    "alert": {
+     "at": 2460,
+     "msg": "Ultimi 3 km: alza a 6'20\"–6'30\"/km."
+    }
+   }
+  ]
+ },
+ {
+  "w": 18,
+  "b": 3,
+  "s": [
+   {
+    "k": "A",
+    "p": "8'30\"–9'00\"/km · le 4 × 20\" quasi a tutta",
+    "t": "20' facile + 4 × 20\" veloci",
+    "interval": {
+     "continuous": 1200
+    }
+   },
+   {
+    "k": "B",
+    "p": "parti a 6'10\" e chiudi a 5'50\"",
+    "t": "10 km — parti a 6'10\", chiudi a 5'50\"",
+    "tag": "test"
+   }
+  ]
+ }
 ];
 
 const DAYS = {A:'martedì + Giorno 1 — facile', B:'sabato, solo corsa — seduta chiave'};
@@ -406,7 +821,7 @@ function playTimerSound(count){
   }
 }
 
-function timerMarkup(id,interval){
+function timerMarkup(id,interval,alerts){
   const steps = timerSteps(interval);
   const total = steps.reduce((sum,step)=>sum+step.duration,0);
   const current = intervalTimer && intervalTimer.id===id ? intervalTimer : null;
@@ -421,6 +836,17 @@ function timerMarkup(id,interval){
   const label = current && current.running ? 'Pausa' :
     current && !position.done && elapsed>0 ? 'Riprendi' :
       position.done ? 'Ricomincia' : 'Avvia';
+  const alist = alerts || [];
+  const fired = current ? (current.fired||[]) : [];
+  const alertsHtml = alist.length ? '<div class="timer-alerts" data-timer-alerts="'+id+'">'
+    + '<div class="al-title">Avvisi di ritmo</div>'
+    + alist.map((a,i)=>{
+        const isFired = fired.indexOf(i)>=0 || elapsed>=a.at;
+        return '<div class="al'+(isFired?' fired':'')+'" data-al="'+i+'">'
+          + '<span class="al-t">'+(isFired?'fatto':fmtTimer(Math.max(0,a.at-elapsed)))+'</span>'
+          + '<span class="al-m">'+a.msg+'</span></div>';
+      }).join('')
+    + '</div>' : '';
   return '<div class="interval-timer" role="group" aria-label="Timer corsa e camminata">'
     +'<div><div class="timer-phase" data-timer-phase="'+id+'" aria-live="polite">'+phase+'</div>'
     +'<div class="timer-readout" data-timer-readout="'+id+'">'+readout+'</div>'
@@ -429,7 +855,8 @@ function timerMarkup(id,interval){
     +'<button type="button" class="btn pri" data-timer-toggle="'+id+'">'+label+'</button>'
     +'<button type="button" class="btn" data-timer-reset="'+id+'">Azzera</button>'
     +'</div></div>'
-    +'<div class="hint">Il timer segue gli intervalli di questa seduta. Tieni aperta l’app per sentire i segnali.</div>';
+    + alertsHtml
+    +'<div class="hint">Il primo timer scandisce corsa e camminata. Il riquadro arancione &egrave; il secondo timer: conta quanto manca a ogni avviso di ritmo, con tre bip e il messaggio. Tieni aperta l&rsquo;app per sentire i segnali.</div>';
 }
 
 function updateTimerDisplay(){
@@ -450,6 +877,18 @@ function updateTimerDisplay(){
   document.querySelectorAll('[data-timer-phase="'+intervalTimer.id+'"]').forEach(el=>el.textContent=phase);
   document.querySelectorAll('[data-timer-readout="'+intervalTimer.id+'"]').forEach(el=>el.textContent=readout);
   document.querySelectorAll('[data-timer-progress="'+intervalTimer.id+'"]').forEach(el=>el.textContent=progress);
+  (workout.alert||[]).forEach((a,i)=>{
+    if(!(intervalTimer.fired||[]).includes(i) && elapsed>=a.at){
+      intervalTimer.fired.push(i);
+      if(intervalTimer.running){ playTimerSound(3); toast('\u23f1 '+a.msg); }
+    }
+    const isFired = (intervalTimer.fired||[]).indexOf(i)>=0;
+    document.querySelectorAll('[data-timer-alerts="'+intervalTimer.id+'"] [data-al="'+i+'"]').forEach(box=>{
+      box.classList.toggle('fired',isFired);
+      const t = box.querySelector('.al-t');
+      if(t) t.textContent = isFired ? 'fatto' : fmtTimer(Math.max(0,a.at-elapsed));
+    });
+  });
   document.querySelectorAll('[data-timer-toggle="'+intervalTimer.id+'"]').forEach(el=>{
     el.textContent = intervalTimer.running ? 'Pausa' :
       position.done ? 'Ricomincia' : elapsed>0 ? 'Riprendi' : 'Avvia';
@@ -483,8 +922,9 @@ function toggleIntervalTimer(id,interval){
   if(intervalTimer && intervalTimer.id===id && timerPosition(timerElapsed(),timerSteps(interval)).stepIndex===timerSteps(interval).length){
     intervalTimer.elapsed = 0;
     intervalTimer.stepIndex = 0;
+    intervalTimer.fired = [];
   }else if(!intervalTimer || intervalTimer.id!==id){
-    intervalTimer = {id,elapsed:0,stepIndex:0,running:false,startedAt:0};
+    intervalTimer = {id,elapsed:0,stepIndex:0,running:false,startedAt:0,fired:[]};
   }
   intervalTimer.startedAt = Date.now();
   intervalTimer.running = true;
@@ -501,6 +941,7 @@ function resetIntervalTimer(id){
   intervalTicker = null;
   intervalTimer.elapsed = 0;
   intervalTimer.stepIndex = 0;
+  intervalTimer.fired = [];
   intervalTimer.running = false;
   updateTimerDisplay();
 }
@@ -538,7 +979,7 @@ function renderPlan(){
     const timerWeek = parseInt(intervalTimer.id.split('-')[0],10);
     const timerKey = intervalTimer.id.split('-')[1];
     html += '<div class="card"><div class="name">Timer attivo · settimana '+timerWeek+' · Corsa '+timerKey+'</div>'
-      + timerMarkup(intervalTimer.id,PLAN.find(item=>item.w===timerWeek).s.find(item=>item.k===timerKey).interval)
+      + timerMarkup(intervalTimer.id,PLAN.find(item=>item.w===timerWeek).s.find(item=>item.k===timerKey).interval,PLAN.find(item=>item.w===timerWeek).s.find(item=>item.k===timerKey).alert)
       + '</div>';
   }
   bl.s.forEach(x=>{
@@ -566,7 +1007,7 @@ function renderPlan(){
       +   '</div>'
       +   '<button class="chev" data-chev="'+id+'">'+(isOpen?'▲':'▼')+'</button>'
       + '</div>'
-        + (x.interval ? timerMarkup(id,x.interval) : '')
+        + (x.interval ? timerMarkup(id,x.interval,x.alert) : '')
       + '<div class="log">'
       +   '<div class="grid">'
       +     '<div class="fld"><label>Distanza (km)</label><input inputmode="decimal" data-f="km" data-id="'+id+'" value="'+(d.km||'')+'" placeholder="es. 5,2"></div>'
@@ -675,6 +1116,7 @@ function renderRefs(){
     ['Ritmo facile','8\'30"–9\'00"/km, parlando in frasi intere. Il 70-80% dei km sta qui.'],
     ['Ordine dei pesi','Con due corse a settimana non devi correre prima dei pesi: martedì fai come preferisci. Il sabato è solo corsa.'],
     ['Ritmo del lungo','Deve crescere di settimana in settimana, non la velocità.'],
+    ['Secondo timer','Il riquadro arancione conta quanto manca a ogni cambio di ritmo: tre bip e il messaggio. Parte con il primo timer e si azzera con «Azzera».'],
     ['Dolore','Fastidio che passa = ok. Dolore che peggiora a ogni uscita = due giorni di stop.'],
     ['Scarpe','Oltre 600-700 km o 2 anni: cambiale prima del blocco 2.'],
     ['Saltare una settimana','Si riprende dalla stessa settimana, non da quella dopo.']

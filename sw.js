@@ -1,4 +1,4 @@
-const CACHE = 'corsa10k-v4';
+const CACHE = 'corsa10k-v5';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
