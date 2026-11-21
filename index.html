@@ -160,7 +160,7 @@
   <h1>10 km sotto l'ora</h1>
   <div class="sub" id="subline">18 settimane · Silvia</div>
   <div class="bar"><i id="progbar"></i></div>
-  <div class="barmeta"><span id="progtxt">0 / 54 sedute</span><span id="kmtxt">0 km</span></div>
+  <div class="barmeta"><span id="progtxt">0 / 36 sedute</span><span id="kmtxt">0 km</span></div>
 </header>
 
 <div class="weeks" id="weeks"></div>
@@ -202,19 +202,20 @@
       <b>Recupero</b> camminata o 9'00"+/km.<br><br>
       Il 70-80% dei chilometri va corso facile. Se corri tutto a ritmo medio, ti fai male.
       <br><br>
-      <b>La settimana:</b> martedì corsa A + Giorno 1 · giovedì corsa B + Giorno 2 · sabato corsa C da sola · domenica Giorno 3. Corri prima dei pesi solo il giovedì.
+      <b>La settimana:</b> martedì corsa A (facile) + Giorno 1 · giovedì Giorno 2 · sabato corsa B (seduta chiave), da sola · domenica Giorno 3. Martedì corri quando preferisci, prima o dopo i pesi; il sabato è solo corsa.
       <br><br>
-      <b>Checkpoint settimana 6:</b> 45' continuo. <b>Settimana 12:</b> test 5 km — sotto 30' sei in linea per l'ora.
+      <b>Checkpoint settimana 6:</b> 45' continuo. <b>Settimana 12 (sabato):</b> test 5 km — sotto 30' sei in linea per l'ora. Con due sedute a settimana il volume conta più della velocità: il lavoro di qualità sta negli ultimi chilometri della corsa lunga.
     </div>
   </details>
   <details>
     <summary>Pesi — adattamenti nei giorni doppi</summary>
     <div class="inner">
       <ul>
-        <li><b>Martedì</b> — ordine libero. Dalla settimana 13: una serie in meno di bulgarian e lateral lunge.</li>
-        <li><b>Giovedì</b> — corsa sempre prima. Nelle settimane 7, 8, 11, 13, 15, 17: bulgarian e single leg box squat a 2 serie, senza cedimento.</li>
-        <li><b>Domenica</b> — SL RDL, KB swing e iperestensioni lasciando 1-2 ripetizioni di margine.</li>
-        <li><b>Mai</b> corsa a un orario e pesi a un altro come se fossero due giorni diversi.</li>
+        <li><b>Martedì</b> — unico giorno doppio. Ordine libero: prima la corsa se vuoi proteggere la qualità, prima i pesi se ti viene meglio con la palestra. Se corri dopo i pesi, aspetta 20-25'.</li>
+        <li><b>Martedì, dalla settimana 13</b> — una serie in meno di bulgarian e lateral lunge.</li>
+        <li><b>Giovedì</b> — solo Giorno 2, nessuna corsa: puoi spingere.</li>
+        <li><b>Sabato</b> — solo corsa, nessun peso. È la seduta che costruisce i 10 km.</li>
+        <li><b>Domenica</b> — Giorno 3: SL RDL, KB swing e iperestensioni lasciando 1-2 ripetizioni di margine.</li>
       </ul>
     </div>
   </details>
@@ -231,80 +232,62 @@
 <script>
 const PLAN = [
  {w:1,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 1\' corsa / 1\' cammino × 12',interval:{run:60,walk:60,repeats:12}},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 90" corsa / 60" cammino × 10',interval:{run:90,walk:60,repeats:10}},
-   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'20\': 1\' corsa / 1\' cammino × 10',interval:{run:60,walk:60,repeats:10}},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 1\' corsa / 1\' cammino × 12',interval:{run:60,walk:60,repeats:12}}]},
  {w:2,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 3\' corsa / 1\' cammino × 7',interval:{run:180,walk:60,repeats:7}},
-   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'35\': 3\' corsa / 1\' cammino × 9',interval:{run:180,walk:60,repeats:9}}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'25\': 2\' corsa / 1\' cammino × 8',interval:{run:120,walk:60,repeats:8}},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}}]},
  {w:3,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'30\': 4\' corsa / 1\' cammino × 6',interval:{run:240,walk:60,repeats:6}},
-   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'32\': 5\' corsa / 1\' cammino × 5',interval:{run:300,walk:60,repeats:5}},
-   {k:'C',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'38\': 5\' corsa / 1\' cammino × 6',interval:{run:300,walk:60,repeats:6}}]},
+   {k:'A',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'28\': 3\' corsa / 1\' cammino × 7',interval:{run:180,walk:60,repeats:7}},
+   {k:'B',p:'8\'30"–9\'00"/km nei tratti di corsa',t:'35\': 3\' corsa / 1\' cammino × 9',interval:{run:180,walk:60,repeats:9}}]},
  {w:4,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km, senza forzare',t:'25\' facile, con qualche pausa di cammino',tag:'scarico'},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'28\': 4\' corsa / 1\' cammino',interval:{run:240,walk:60,duration:28*60}},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'30\' corsa facile'}]},
+   {k:'A',p:'8\'30"–9\'00"/km, senza forzare',t:'25\' facile, con qualche pausa di cammino',tag:'scarico',interval:{continuous:25*60}},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'30\': 2\' corsa / 1\' cammino × 10',interval:{run:120,walk:60,repeats:10}}]},
  {w:5,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' corsa continua facile'},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'32\' corsa continua facile'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'40\' continuo — concessi 2\' di cammino'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' corsa continua facile',interval:{continuous:30*60}},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'40\' continuo — concessi 2\' di cammino',interval:{continuous:40*60}}]},
  {w:6,b:1,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' corsa continua'},
-   {k:'B',p:'facile 8\'30"–9\'00" · i 3\' moderati a 6\'50"–7\'10"',t:'35\' con 3 × 3\' moderato, 2\' facile in mezzo'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'45\' corsa continua — circa 5 km',tag:'test'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' corsa continua facile',interval:{continuous:30*60}},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'45\' corsa continua — circa 5 km',tag:'test',interval:{continuous:45*60}}]},
  {w:7,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
-   {k:'B',p:'2\' forti a 6\'15"–6\'30" · recupero a 9\'00"',t:'6 × 2\' forte, 90" di recupero'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'50\' facile — circa 6 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' facile',interval:{continuous:30*60}},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'50\' facile — circa 6 km',interval:{continuous:50*60}}]},
  {w:8,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
-   {k:'B',p:'4\' forti a 6\'15"–6\'30" · recupero a 9\'00"',t:'5 × 4\' forte, 2\' di recupero'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'55\' facile — circa 6,5 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'32\' facile',interval:{continuous:32*60}},
+   {k:'B',p:'8\'30"–9\'00"/km · ultimo km a 7\'00"',t:'55\' facile — circa 6,5 km, con l\'ultimo km un po\' più svelto',interval:{continuous:55*60}}]},
  {w:9,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
-   {k:'B',p:'8\' a 6\'50"–7\'10" · recupero facile',t:'2 × 8\' moderato, 3\' di recupero'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'60\' facile — circa 7 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'32\' facile',interval:{continuous:32*60}},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'60\' facile — circa 7 km',interval:{continuous:60*60}}]},
  {w:10,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'30\' facile',tag:'scarico'},
-   {k:'B',p:'2\' a 6\'50"–7\'10" · recupero facile',t:'6 × 2\' moderato'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'45\' facile'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'25\' facile',tag:'scarico',interval:{continuous:25*60}},
+   {k:'B',p:'8\'30"–9\'00"/km',t:'40\' facile',interval:{continuous:40*60}}]},
  {w:11,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km',t:'35\' facile'},
-   {k:'B',p:'8\' a 6\'45"–7\'00" · recupero facile',t:'3 × 8\' moderato, 3\' di recupero'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'65\' facile — circa 8 km'}]},
+   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'30\' facile + 4 × 20" veloci',interval:{continuous:30*60}},
+   {k:'B',p:'8\'30"–9\'00"/km · ultimi 2 km a 7\'00"–7\'10"',t:'65\' — circa 7,5 km, con gli ultimi 2 km moderati',interval:{continuous:65*60}}]},
  {w:12,b:2,s:[
-   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'30\' facile + 4 × 20" veloci'},
-   {k:'B',p:'test: parti a 7\'00", chiudi a 6\'30"',t:'Test 5 km a tutta, dopo 12\' di riscaldamento',tag:'test'},
-   {k:'C',p:'8\'30"–9\'00"/km',t:'60\' facile'}]},
+   {k:'A',p:'8\'30"–9\'00"/km',t:'25\' facile',interval:{continuous:25*60}},
+   {k:'B',p:'test: parti a 7\'00", chiudi a 6\'30"',t:'Test 5 km a tutta, dopo 12\' di riscaldamento',tag:'test'}]},
  {w:13,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'35\' facile'},
-   {k:'B',p:'5\' a 6\'15"–6\'30" · recupero 2\'30" a 9\'00"',t:'5 × 5\' a 6\'15"–6\'30", 2\'30" di recupero'},
-   {k:'C',p:'8\'15"–8\'45"/km',t:'70\' facile — circa 8,5 km'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',interval:{continuous:30*60}},
+   {k:'B',p:'facile 8\'30" · ultimi 3 km a 6\'50"',t:'70\' — circa 8,5 km, con gli ultimi 3 km a ritmo moderato',interval:{continuous:70*60}}]},
  {w:14,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'35\' facile'},
-   {k:'B',p:'20\' continui a 6\'40"–6\'50"',t:'20\' continuo a 6\'40"–6\'50"'},
-   {k:'C',p:'8\'15"–8\'45"/km',t:'75\' facile — circa 9 km'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',interval:{continuous:30*60}},
+   {k:'B',p:'facile 8\'30" · 2 × 10\' a 6\'45"',t:'75\' con 2 × 10\' a 6\'45", 3\' facile in mezzo',interval:{continuous:75*60}}]},
  {w:15,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'35\' facile'},
-   {k:'B',p:'8\' a 6\'15" · recupero 3\' facile',t:'3 × 8\' a 6\'15", 3\' di recupero'},
-   {k:'C',p:'8\'15"–8\'45"/km',t:'80\' facile — circa 9,5 km'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',interval:{continuous:30*60}},
+   {k:'B',p:'8\'15"–8\'45"/km',t:'75\' facile — circa 9 km',interval:{continuous:75*60}}]},
  {w:16,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km',t:'30\' facile',tag:'scarico'},
-   {k:'B',p:'5\' a 6\'10" · recupero 3\' facile',t:'3 × 5\' a 6\'10", 3\' di recupero'},
-   {k:'C',p:'8\'15"–8\'45"/km',t:'60\' facile'}]},
+   {k:'A',p:'8\'15"–8\'45"/km',t:'25\' facile',tag:'scarico',interval:{continuous:25*60}},
+   {k:'B',p:'8\'15"–8\'45"/km',t:'50\' facile',interval:{continuous:50*60}}]},
  {w:17,b:3,s:[
-   {k:'A',p:'8\'15"–8\'45"/km · le 4 × 20" quasi a tutta',t:'30\' facile + 4 × 20" veloci'},
-   {k:'B',p:'5\' a 6\'05" · recupero 2\'30"',t:'4 × 5\' a 6\'05", 2\'30" di recupero'},
-   {k:'C',p:'8\'15"–8\'45"/km',t:'50-60\' facile'}]},
+   {k:'A',p:'8\'15"–8\'45"/km · le 4 × 20" quasi a tutta',t:'25\' facile + 4 × 20" veloci',interval:{continuous:25*60}},
+   {k:'B',p:'facile 8\'30" · ultimi 3 km a 6\'20"–6\'30"',t:'60\' — circa 7 km, con gli ultimi 3 km a ritmo gara',interval:{continuous:60*60}}]},
  {w:18,b:3,s:[
-   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'25\' facile + 4 × 20" veloci'},
-   {k:'B',p:'8\'30"–9\'00"/km',t:'20\' facile'},
-   {k:'C',p:'parti a 6\'10" e chiudi a 5\'50"',t:'10 km — parti a 6\'10", chiudi a 5\'50"',tag:'test'}]}
+   {k:'A',p:'8\'30"–9\'00"/km · le 4 × 20" quasi a tutta',t:'20\' facile + 4 × 20" veloci',interval:{continuous:20*60}},
+   {k:'B',p:'parti a 6\'10" e chiudi a 5\'50"',t:'10 km — parti a 6\'10", chiudi a 5\'50"',tag:'test'}]}
 ];
 
-const DAYS = {A:'martedì + Giorno 1', B:'giovedì + Giorno 2', C:'sabato, solo corsa'};
+const DAYS = {A:'martedì + Giorno 1 — facile', B:'sabato, solo corsa — seduta chiave'};
 const BLOCKNAME = {1:'Blocco 1 — Base',2:'Blocco 2 — Volume e velocità',3:'Blocco 3 — Specifico 10 km'};
 const KEY = 'corsa10k.v1';
 
@@ -359,6 +342,7 @@ function fmtTimer(sec){
 function num(v){ const n = parseFloat(String(v).replace(',','.')); return isNaN(n)?0:n; }
 
 function timerSteps(interval){
+  if(interval.continuous) return [{kind:'run',duration:interval.continuous,cycle:1}];
   const steps = [];
   let remaining = interval.duration || Infinity;
   const repetitions = interval.repeats || Math.ceil(remaining/(interval.run+interval.walk));
@@ -535,9 +519,9 @@ function renderWeeks(){
     const done = bl.s.filter(x=>get(bl.w,x.k).done).length;
     const cls = ['wk'];
     if(bl.w===cur) cls.push('active');
-    if(done===3) cls.push('done');
+    if(done===bl.s.length) cls.push('done');
     else if(done>0) cls.push('partial');
-    return '<button class="'+cls.join(' ')+'" data-w="'+bl.w+'">'+bl.w+'<small>'+done+'/3</small></button>';
+    return '<button class="'+cls.join(' ')+'" data-w="'+bl.w+'">'+bl.w+'<small>'+done+'/'+bl.s.length+'</small></button>';
   }).join('');
   document.querySelectorAll('.wk').forEach(b=>{
     b.onclick = ()=>{ state.week = parseInt(b.dataset.w,10); save(); renderAll(); };
@@ -689,7 +673,7 @@ function renderHeader(){
 function renderRefs(){
   const items = [
     ['Ritmo facile','8\'30"–9\'00"/km, parlando in frasi intere. Il 70-80% dei km sta qui.'],
-    ['Ordine dei pesi','Corsa prima solo il giovedì. Martedì fai come preferisci.'],
+    ['Ordine dei pesi','Con due corse a settimana non devi correre prima dei pesi: martedì fai come preferisci. Il sabato è solo corsa.'],
     ['Ritmo del lungo','Deve crescere di settimana in settimana, non la velocità.'],
     ['Dolore','Fastidio che passa = ok. Dolore che peggiora a ogni uscita = due giorni di stop.'],
     ['Scarpe','Oltre 600-700 km o 2 anni: cambiale prima del blocco 2.'],
